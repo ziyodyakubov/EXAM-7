@@ -1,23 +1,18 @@
-import Aside from "./components/aside"
-import Header from "./components/header"
-import "./../src/routes"
 import './index.css'
+import { Outlet } from "react-router-dom"
+import {Aside,Header} from "@components"
+
 
 function App() {
 
   return (
     <>
-      <Header/>
+    <Header/>
 
-      <main>
-        <div className="flex justify-between">
-          <Aside/>
-          
-          <div className="p-[5px] flex items-center flex-wrap gap-[20px]">
-
-          </div>
-        </div>
-      </main>
+    <div className="flex gap-[30px] min-h-[710px]">
+        <Aside/>
+        <Outlet/>
+    </div>
     </>
   )
 }
