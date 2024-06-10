@@ -10,7 +10,7 @@ export default defineConfig({
       { find: '@routes', replacement: '/src/router'},
       { find: '@components', replacement: '/src/components'},
       { find: '@images', replacement: '/src/assets/images/index.jsx'},
-      { find: '@container', replacement: '/src/components/Containers/container/index.jsx'},
+      { find: '@modal', replacement: '/src/components/modal'},
     ]
   }
 })
