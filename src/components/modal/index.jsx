@@ -1,104 +1,132 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ModalClose, Typography, Sheet, Modal } from "@mui/joy";
 import { TextField, InputLabel, MenuItem, FormControl, Select, Button, Stack } from "@mui/material";
 
+const Index = (props) => {
+    const { todos, setTodos, info, open, toggle } = props;
+    const [form, setForm] = useState({
+        task: "",
+        status: ""
+    });
 
-const index = (props) => {
+    useEffect(() => {
+        if (open) {
+            setForm({
+                task: info.task || "",
+                status: info.status || ""
+            });
+        }
+    }, [info, open]);
 
-    const [status, setStatus] = React.useState('');
-    const [title,setTitle] = React.useState('')
-
-    const handleChange = (event) => {
-        setStatus(event.target.value);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
     };
 
-    const handleChange2 = (event) => {
-        setTitle(event.target.value)
-    }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newTodos = [...todos];
 
-    const handleClick = (info) =>{
-        props.info.push(info)
-        setStatus('')
-        setTitle('')
-        props.toggle()
-    }
+        if (info.status !== undefined && info.index !== undefined) {
+            newTodos.forEach((item) => {
+                if (item.status === info.status) {
+                    item.elements.splice(info.index, 1);
+                }
+            });
+            let targetList = newTodos.find((item) => item.status === form.status);
+            if (targetList) {
+                targetList.elements.push({ title: form.task });
+            } else {
+                newTodos.push({ status: form.status, elements: [{ title: form.task }] });
+            }
+        } else {
+            let targetList = newTodos.find((item) => item.status === form.status);
+            if (targetList) {
+                targetList.elements.push({ title: form.task });
+            } else {
+                newTodos.push({ status: form.status, elements: [{ title: form.task }] });
+            }
+        }
 
+        setTodos(newTodos);
+        setForm({ task: "", status: "" }); 
+        toggle();
+    };
 
     return (
         <React.Fragment>
-            <Modal
-                aria-labelledby="modal-title"
-                aria-describedby="modal-desc"
-                open={props.open}
-                onClose={props.toggle}
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-            >
-                <Sheet
-                    variant="outlined"
-                    sx={{
-                        height: 330,
-                        maxWidth: 900,
-                        borderRadius: "md",
-                        p: 3,
-                        boxShadow: "lg",
-                    }}
+            <form id="submit" onSubmit={handleSubmit}>
+                <Modal
+                    aria-labelledby="modal-title"
+                    aria-describedby="modal-desc"
+                    open={open}
+                    onClose={toggle}
+                    sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
                 >
-                    <ModalClose variant="plain" sx={{ m: 1 }} />
-                    <Typography
-                        component="h2"
-                        id="modal-title"
-                        level="h4"
-                        textColor="inherit"
-                        fontWeight="lg"
-                        mb={0}
+                    <Sheet
+                        variant="outlined"
+                        sx={{
+                            height: 330,
+                            maxWidth: 900,
+                            borderRadius: "md",
+                            p: 3,
+                            boxShadow: "lg",
+                        }}
                     >
-                        Choose status
-                    </Typography> 
-                    <Typography
-                        id="modal-desc"
-                        height={170}
-                        width={400}
-                        textColor="text.tertiary"
-                    >
-                        <div className="flex flex-col gap-[15px] mt-[35px]">
-                            <TextField
-                                id="outlined-basic"
-                                label="Title"
-                                variant="outlined"
-                                value={title}
-                                onChange={handleChange2}
-                            />
-                            <FormControl sx={{ m: 0, minWidth: 105 }}>
-                                <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-helper-label"
-                                    id="demo-simple-select-helper"
-                                    value={status}
-                                    label="Status"
+                        <ModalClose variant="plain" sx={{ m: 1 }} />
+                        <Typography
+                            component="h2"
+                            id="modal-title"
+                            level="h4"
+                            textColor="inherit"
+                            fontWeight="lg"
+                            mb={0}
+                        >
+                            Choose status
+                        </Typography>
+                        <Typography
+                            id="modal-desc"
+                            height={170}
+                            width={400}
+                            textColor="text.tertiary"
+                        >
+                            <div className="flex flex-col gap-[15px] mt-[35px]">
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Title"
+                                    variant="outlined"
+                                    name="task"
+                                    value={form.task}
                                     onChange={handleChange}
-                                >
-
-                                    <MenuItem value={"Open"}>Open</MenuItem>
-                                    <MenuItem value={"Pending"}>Pending</MenuItem>
-                                    <MenuItem value={"Inprog"}>Inprog</MenuItem>
-                                    <MenuItem value={"Complete"}>Complete</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                        </div>
-                    </Typography>
-                    <Stack spacing={2} direction="row">
-                        <Button type="submit" variant="contained" onClick={()=>handleClick({status,title})} color="success">
-                            Submit
-                        </Button>
-                    </Stack>
-
-                </Sheet>
-
-            </Modal>
-
+                                />
+                                <FormControl sx={{ m: 0, minWidth: 105 }}>
+                                    <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-helper-label"
+                                        id="demo-simple-select-helper"
+                                        label="Status"
+                                        name="status"
+                                        value={form.status}
+                                        onChange={handleChange}
+                                    >
+                                        <MenuItem value={"Open"}>Open</MenuItem>
+                                        <MenuItem value={"Pending"}>Pending</MenuItem>
+                                        <MenuItem value={"Inprog"}>Inprog</MenuItem>
+                                        <MenuItem value={"Completed"}>Complete</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </Typography>
+                        <Stack spacing={2} direction="row">
+                            <Button type="submit" form="submit" variant="contained" color="success">
+                                Submit
+                            </Button>
+                        </Stack>
+                    </Sheet>
+                </Modal>
+            </form>
         </React.Fragment>
     );
 };
 
-export default index;
+export default Index;
